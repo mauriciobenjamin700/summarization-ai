@@ -52,4 +52,60 @@ mock_chats = [
         """,
         "created_at": datetime(2025, 8, 21, 14, 5, 0),
     },
+    # Novo chat: suporte de manutenção de internet em casa
+    {
+        "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        "user_id": "9f8e7d6c-5b4a-3c2d-9e0f-a1b2c3d4e5f6",
+        "role": "user",
+        "content": """Olá, minha internet de casa está oscilando e 
+        caindo toda hora. Preciso de suporte para manutenção. Pode me orientar?
+        """,
+        "created_at": datetime(2025, 8, 21, 14, 6, 0),
+    },
+    {
+        "id": "d5c4b3a2-1f0e-9d8c-7b6a-5f4e3d2c1b0a",
+        "user_id": "9f8e7d6c-5b4a-3c2d-9e0f-a1b2c3d4e5f6",
+        "role": "assistant",
+        "content": """
+        Claro! Siga estes passos:
+        1) Verifique cabos e luzes do modem/roteador;
+        2) Reinicie os equipamentos por 30s;
+        3) Teste via cabo e rode um speedtest;
+        4) Veja o histórico de quedas no modem;
+        5) Se persistir, informe operadora, modelo do roteador e 
+        horário das quedas para abrir chamado.
+        """,
+        "created_at": datetime(2025, 8, 21, 14, 7, 0),
+    },
+    {
+        "id": "e7f6d5c4-b3a2-4190-8d7c-6e5f4d3c2b1a",
+        "user_id": "9f8e7d6c-5b4a-3c2d-9e0f-a1b2c3d4e5f6",
+        "role": "user",
+        "content": """
+        Escolhi a opção 2 (reiniciar modem/roteador por 30s) e deu certo: 
+        a conexão estabilizou. Suporte concluído com sucesso, obrigado!""",
+        "created_at": datetime(2025, 8, 21, 14, 7, 30),
+    },
+    # Novo chat: apenas indicações de filmes
+    {
+        "id": "11223344-5566-7788-99aa-bbccddeeff00",
+        "user_id": "0a1b2c3d-4e5f-6789-abcd-ef0123456789",
+        "role": "user",
+        "content": """
+        Quero apenas indicações de filmes para hoje à noite. 
+        Curto ficção científica e suspense.
+        """,
+        "created_at": datetime(2025, 8, 21, 14, 8, 0),
+    },
+    {
+        "id": "00ffeedd-ccbb-aabb-8877-665544332211",
+        "user_id": "0a1b2c3d-4e5f-6789-abcd-ef0123456789",
+        "role": "assistant",
+        "content": """
+        Sugestões: Ex Machina (2014), Arrival (2016), Blade Runner 2049 (2017), 
+        Annihilation (2018), 
+        Prisoners (2013).
+        """,
+        "created_at": datetime(2025, 8, 21, 14, 9, 0),
+    },
 ]

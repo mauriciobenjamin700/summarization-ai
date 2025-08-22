@@ -1,7 +1,6 @@
 import re
 from typing import Any, Callable, Optional
 
-from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama, OllamaLLM
 from langgraph.graph.state import CompiledStateGraph
@@ -33,30 +32,9 @@ class AIHandler:
         Summarize the provided chat history.
         """
 
-        chat_history = ""
+        chat_history = self.__format_chat_to_llm(history)
 
-        for msg in history:
-            for key, value in msg.items():
-                chat_history += f"{key}: {value}\n"
-
-            chat_history += "\n"
-
-        messages = [
-            ("system", "You are a assistant expert in summarization."),
-            (
-                "user",
-                """
-                Summarize the following conversation in PT-BR
-                with a concise paragraph: 
-             
-                <conversation>
-                {chat_history}
-                </conversation>
-            """,
-            ),
-        ]
-
-        template = ChatPromptTemplate.from_messages(messages)
+        template = self.__summarize_prompt()
         params = {"chat_history": chat_history}
         output = self.invoke(template, params)
         if echo:
@@ -75,14 +53,38 @@ class AIHandler:
         )
 
     def execute_agent(
-        self, agent: CompiledStateGraph[Any], messages: list[BaseMessage]
+        self, agent: CompiledStateGraph[Any], messages: list[dict[str, Any]]
     ):
-        messages_to_agent = [msg.model_dump() for msg in messages]
-        return agent.invoke({"messages": messages_to_agent})
+        return agent.invoke({"messages": messages})
 
-    def get_agent_structured_response(
-        self, agent: CompiledStateGraph[Any], messages: list[BaseMessage]
+    def get_agent_structured_response_by_chat(
+        self, agent: CompiledStateGraph[Any], messages: list[dict[str, Any]]
     ) -> Optional[BaseModel]:
+        messages.append(
+            {
+                "role": "system",
+                "content": """
+                You are an AI assistant that provides structured responses 
+                based on the conversation history.
+
+                Always provide a concise summary of the key points discussed.
+            """,
+            }
+        )
+        return self.execute_agent(agent, messages)["structured_response"]
+
+    def get_structured_response_by_text(
+        self, agent: CompiledStateGraph[Any], text: str
+    ) -> Optional[BaseModel]:
+        messages = [
+            {
+                "role": "system",
+                "content": """
+                You are an expert in building structured outputs by 
+                summarizing data.""",
+            },
+            {"role": "user", "content": text},
+        ]
         return self.execute_agent(agent, messages)["structured_response"]
 
     def show_graph(self, agent: CompiledStateGraph[Any]):
@@ -102,3 +104,31 @@ class AIHandler:
         Remove <think>...</think> tags and their content from the AI output.
         """
         return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+    def __summarize_prompt(self) -> ChatPromptTemplate:
+        messages = [
+            ("system", "You are a assistant expert in summarization."),
+            (
+                "user",
+                """
+                Summarize the following conversation in PT-BR
+                with a concise paragraph: 
+             
+                <conversation>
+                {chat_history}
+                </conversation>
+            """,
+            ),
+        ]
+        return ChatPromptTemplate.from_messages(messages)
+
+    def __format_chat_to_llm(self, chat: list[dict[str, Any]]) -> str:
+        """
+        Format chat history into a string for LLM input.
+        """
+        formatted_chat = ""
+        for message in chat:
+            role = message.get("role", "user")
+            content = message.get("content", "")
+            formatted_chat += f"{role}: {content}\n"
+        return formatted_chat.strip()
